@@ -1755,4 +1755,3 @@ const allWords = [
     { "level": 12, "word": "yolk", "syllables": ["yolk"], "ipa": "/joʊk/", "meaning": "n. 蛋黃" },
     { "level": 12, "word": "zone", "syllables": ["zone"], "ipa": "/zoʊn/", "meaning": "n. 地帶" }
 ];
-];
