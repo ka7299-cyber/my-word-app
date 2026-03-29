@@ -789,4 +789,5 @@ const allWords = [
     { "level": 8, "word": "responsible", "syllables": ["re", "spon", "si", "ble"], "ipa": "/rɪˈspɑːnsəbl/", "meaning": "adj. 負責任的" },
     { "level": 8, "word": "temperature", "syllables": ["tem", "per", "a", "ture"], "ipa": "/ˈtemprətʃər/", "meaning": "n. 溫度" },
     { "level": 8, "word": "vocabulary", "syllables": ["vo", "cab", "u", "lar", "y"], "ipa": "/vəˈkæbjəleri/", "meaning": "n. 詞彙量" }
+    
 ];
