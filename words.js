@@ -789,7 +789,8 @@ const allWords = [
     { "level": 8, "word": "responsible", "syllables": ["re", "spon", "si", "ble"], "ipa": "/rɪˈspɑːnsəbl/", "meaning": "adj. 負責任的" },
     { "level": 8, "word": "temperature", "syllables": ["tem", "per", "a", "ture"], "ipa": "/ˈtemprətʃər/", "meaning": "n. 溫度" },
     { "level": 8, "word": "vocabulary", "syllables": ["vo", "cab", "u", "lar", "y"], "ipa": "/vəˈkæbjəleri/", "meaning": "n. 詞彙量" }
-// === Level 9 完整清單 (共 120 字，一個不漏) ===
+
+    // === Level 9 完整清單 (共 120 字，一個不漏) ===
     { "level": 9, "word": "accept", "syllables": ["ac", "cept"], "ipa": "/əkˈsept/", "meaning": "v. 接受" },
     { "level": 9, "word": "achieve", "syllables": ["a", "chieve"], "ipa": "/əˈtʃiːv/", "meaning": "v. 完成；達到" },
     { "level": 9, "word": "active", "syllables": ["ac", "tive"], "ipa": "/ˈæktɪv/", "meaning": "adj. 活躍的" },
@@ -1030,7 +1031,8 @@ const allWords = [
     { "level": 9, "word": "wound", "syllables": ["wound"], "ipa": "/wuːnd/", "meaning": "n.v. 傷口" },
     { "level": 9, "word": "wrist", "syllables": ["wrist"], "ipa": "/rɪst/", "meaning": "n. 手腕" },
     { "level": 9, "word": "youth", "syllables": ["youth"], "ipa": "/juːθ/", "meaning": "n. 青春" }
-// === Level 10 完整清單 (依據圖片 164658 ~ 164734 整理，共約 230 字) ===
+
+     // === Level 10 完整清單 (依據圖片 164658 ~ 164734 整理，共約 230 字) ===
     { "level": 10, "word": "abroad", "syllables": ["a", "broad"], "ipa": "/əˈbrɔːd/", "meaning": "adv. 在國外" },
     { "level": 10, "word": "accompany", "syllables": ["ac", "com", "pa", "ny"], "ipa": "/əˈkʌmpəni/", "meaning": "v. 陪同、伴隨" },
     { "level": 10, "word": "account", "syllables": ["ac", "count"], "ipa": "/əˈkaʊnt/", "meaning": "n. 帳、帳目" },
@@ -1271,7 +1273,8 @@ const allWords = [
     { "level": 10, "word": "underground", "syllables": ["un", "der", "ground"], "ipa": "/ˌʌndərˈɡraʊnd/", "meaning": "adj. 地下的" },
     { "level": 10, "word": "upset", "syllables": ["up", "set"], "ipa": "/ˌʌpˈset/", "meaning": "n. 弄翻、打翻" },
     { "level": 10, "word": "well-known", "syllables": ["well", "known"], "ipa": "/ˌwel ˈnoʊn/", "meaning": "adj. 眾所周知的" }
-// === Level 11 完整清單 (一個不漏) ===
+
+     // === Level 11 完整清單 (一個不漏) ===
     { "level": 11, "word": "ache", "syllables": ["ache"], "ipa": "/eɪk/", "meaning": "n.v. 疼痛" },
     { "level": 11, "word": "adventure", "syllables": ["ad", "ven", "ture"], "ipa": "/ədˈventʃər/", "meaning": "n.v. 冒險" },
     { "level": 11, "word": "amaze", "syllables": ["a", "maze"], "ipa": "/əˈmeɪz/", "meaning": "v. 使大為驚奇" },
