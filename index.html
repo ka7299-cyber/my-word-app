@@ -3,36 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OPA 單字練習器</title>
-    <link rel="stylesheet" href="style.css"> <style>
+    <title>OPA 單字助手</title>
+    <style>
         :root { --primary: #4a90e2; --success: #28a745; --bg: #f5f7fa; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: var(--primary); margin-bottom: 25px; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 90vh; }
+        h1 { text-align: center; color: var(--primary); margin-bottom: 20px; font-size: 24px; }
         
-        .controls { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
-        select, input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .controls { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; position: sticky; top: 0; background: white; padding-bottom: 10px; z-index: 10; }
+        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; }
+        input:focus { border-color: var(--primary); }
+        
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 16px; }
+        button { padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; }
         .btn-main { background: var(--primary); color: white; }
         .btn-quick { background: var(--success); color: white; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:active { transform: scale(0.98); opacity: 0.8; }
 
-        #display-area, #test-area { margin-top: 20px; }
-        .word-card { padding: 15px; border-bottom: 1px solid #eee; animation: fadeIn 0.3s; }
-        .word-card:last-child { border-bottom: none; }
+        /* 單字卡片樣式 */
+        .word-card { padding: 15px; border-bottom: 1px solid #f0f0f0; display: flex; flex-direction: column; gap: 5px; }
+        .word-header { display: flex; align-items: center; justify-content: space-between; }
         .word-text { font-size: 20px; font-weight: bold; color: var(--primary); }
-        .ipa { color: #666; font-size: 14px; margin-left: 10px; }
-        .meaning { display: block; margin-top: 5px; color: #444; }
+        .ipa { color: #888; font-size: 14px; font-family: sans-serif; }
+        .meaning { color: #444; font-size: 16px; line-height: 1.4; }
 
-        .quiz-card { text-align: center; padding: 30px 10px; }
-        .quiz-question { font-size: 28px; font-weight: bold; margin-bottom: 20px; }
-        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; border-radius: 10px; background: white; text-align: left; font-size: 18px; }
-        .option-btn:active { background: #f0f0f0; }
-        .progress { text-align: center; color: #888; font-size: 14px; margin-bottom: 10px; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* 測驗區樣式 */
+        .quiz-card { text-align: center; padding: 20px 0; }
+        .quiz-question { font-size: 32px; font-weight: bold; margin: 20px 0; color: #222; }
+        .option-btn { display: block; width: 100%; padding: 16px; margin: 12px 0; border: 2px solid #eee; border-radius: 12px; background: #fff; text-align: left; font-size: 18px; cursor: pointer; }
+        .option-btn:hover { border-color: var(--primary); background: #f0f7ff; }
+        .progress { color: #999; font-size: 14px; }
+        
         .hidden { display: none; }
+        #list-container { max-height: 60vh; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -40,8 +43,8 @@
 <div class="container">
     <h1>OPA Vocab</h1>
 
-    <div class="controls">
-        <input type="text" id="search-input" placeholder="🔍 搜尋單字或中文..." oninput="handleSearch()">
+    <div id="ui-controls" class="controls">
+        <input type="text" id="search-input" placeholder="🔍 搜尋單字或中文意思..." oninput="handleSearch()">
         
         <select id="level-select" onchange="loadLevel()">
             <option value="1">Level 1</option><option value="2">Level 2</option>
@@ -54,17 +57,150 @@
 
         <div class="btn-group">
             <button class="btn-main" onclick="startTest('full')">完整測驗</button>
-            <button class="btn-quick" onclick="startTest('quick')">快速抽測 10 題</button>
+            <button class="btn-quick" onclick="startTest('quick')">隨機 10 題</button>
         </div>
     </div>
 
-    <div id="display-area"></div>
+    <div id="list-area">
+        <div id="list-container"></div>
+    </div>
 
     <div id="test-area" class="hidden"></div>
 </div>
 
 <script src="words.js"></script>
-<script src="script.js"></script>
+
+<script>
+    let currentWords = [];
+    let quizQueue = [];
+    let currentIdx = 0;
+    let score = 0;
+
+    // 啟動載入
+    window.onload = () => { loadLevel(); };
+
+    // 1. 切換等級
+    function loadLevel() {
+        const lv = parseInt(document.getElementById('level-select').value);
+        currentWords = allWords.filter(w => w.level === lv);
+        renderList(currentWords);
+        exitTest();
+    }
+
+    // 2. 搜尋功能 (防呆：字數太多時只顯示前50筆)
+    function handleSearch() {
+        const term = document.getElementById('search-input').value.toLowerCase();
+        if(!term) { renderList(currentWords); return; }
+        
+        const filtered = allWords.filter(w => 
+            w.word.toLowerCase().includes(term) || w.meaning.includes(term)
+        );
+        renderList(filtered.slice(0, 50)); 
+    }
+
+    // 3. 渲染單字
+    function renderList(words) {
+        const container = document.getElementById('list-container');
+        container.innerHTML = words.length ? "" : "<p style='text-align:center;color:#999'>查無結果</p>";
+        
+        words.forEach(w => {
+            const div = document.createElement('div');
+            div.className = 'word-card';
+            div.innerHTML = `
+                <div class="word-header">
+                    <span class="word-text">${w.word}</span>
+                    <span class="ipa">${w.ipa || ''}</span>
+                </div>
+                <div class="meaning">${w.meaning}</div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // 4. 開始測驗
+    function startTest(mode) {
+        if (currentWords.length < 4) { alert("單字量不足！"); return; }
+
+        // 打亂順序 (Fisher-Yates)
+        let pool = [...currentWords];
+        for (let i = pool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+
+        quizQueue = (mode === 'quick') ? pool.slice(0, 10) : pool;
+        currentIdx = 0;
+        score = 0;
+
+        document.getElementById('list-area').classList.add('hidden');
+        document.getElementById('ui-controls').classList.add('hidden');
+        document.getElementById('test-area').classList.remove('hidden');
+        
+        showQuestion();
+    }
+
+    // 5. 顯示題目
+    function showQuestion() {
+        if (currentIdx >= quizQueue.length) { showResult(); return; }
+
+        const item = quizQueue[currentIdx];
+        const testArea = document.getElementById('test-area');
+        
+        // 抓 3 個錯誤答案
+        let options = [item.meaning];
+        let others = allWords.filter(w => w.meaning !== item.meaning);
+        while(options.length < 4) {
+            let r = others[Math.floor(Math.random() * others.length)].meaning;
+            if(!options.includes(r)) options.push(r);
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        testArea.innerHTML = `
+            <div class="progress">進度：${currentIdx + 1} / ${quizQueue.length}</div>
+            <div class="quiz-card">
+                <div class="quiz-question">${item.word}</div>
+                <div class="ipa" style="margin-bottom:20px">${item.ipa || ''}</div>
+                ${options.map(opt => `
+                    <button class="option-btn" onclick="checkAnswer('${opt.replace(/'/g, "\\'")}', '${item.meaning.replace(/'/g, "\\")}')">
+                        ${opt}
+                    </button>
+                `).join('')}
+                <button onclick="exitTest()" style="margin-top:30px; background:none; color:#999; text-decoration:underline">取消測驗</button>
+            </div>
+        `;
+    }
+
+    // 6. 檢查答案
+    function checkAnswer(selected, correct) {
+        if (selected === correct) {
+            score++;
+            currentIdx++;
+            showQuestion();
+        } else {
+            alert("答錯了！\n正確答案是： " + correct);
+            currentIdx++;
+            showQuestion();
+        }
+    }
+
+    // 7. 結算
+    function showResult() {
+        const testArea = document.getElementById('test-area');
+        testArea.innerHTML = `
+            <div class="quiz-card">
+                <h2>測驗完成！ 🎉</h2>
+                <p style="font-size:24px; color:var(--primary); font-weight:bold">得分：${score} / ${quizQueue.length}</p>
+                <button class="btn-main" style="width:100%" onclick="exitTest()">回到單字表</button>
+            </div>
+        `;
+    }
+
+    function exitTest() {
+        document.getElementById('list-area').classList.remove('hidden');
+        document.getElementById('ui-controls').classList.remove('hidden');
+        document.getElementById('test-area').classList.add('hidden');
+    }
+</script>
 
 </body>
 </html>
